@@ -18,7 +18,7 @@ export default {
   },
   showError() {
     error({
-      text: 'Something was going wrong. Please,try again',
+      text: 'Something is going wrong. Please,try again',
     });
   },
 };

@@ -8,17 +8,16 @@ import spinner from './spinner';
 const refs = {
   gallery: document.querySelector('#js-gallery'),
   searchForm: document.querySelector('#js-search-form'),
-  loadMoreBtn: document.querySelector('button[data-action="load-more"]'),
+  ioTrigger: document.querySelector('#io-trigger'),
 };
 
 refs.searchForm.addEventListener('submit', searchFormHandler);
-refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
 refs.gallery.addEventListener('click', imageClickHandler);
 
 function searchFormHandler(e) {
   e.preventDefault();
 
-  removeLoadMoreBtn();
+  disconnectIObserver();
   clearGallery();
   apiService.resetPage();
 
@@ -42,10 +41,9 @@ function createGallery() {
     .fetchImages()
     .then(images => {
       if (images.length > 0) {
-        addLoadMoreBtn();
+        renderGalleryItems(images);
+        connectIObserver();
       }
-      renderGalleryItems(images);
-      scroll();
     })
     .catch(error => {
       notifications.showError();
@@ -61,32 +59,39 @@ function renderGalleryItems(imgArray) {
   refs.gallery.insertAdjacentHTML('beforeend', markup);
 }
 
-function loadMoreBtnHandler() {
-  apiService.incrementPage();
-  createGallery();
-}
-
-function scroll() {
-  const top = window.pageYOffset + window.innerHeight;
-  window.scrollTo({
-    top,
-    behavior: 'smooth',
-  });
-}
-
 function clearGallery() {
   refs.gallery.innerHTML = '';
-}
-
-function addLoadMoreBtn() {
-  refs.loadMoreBtn.classList.remove('is-hidden');
-}
-function removeLoadMoreBtn() {
-  refs.loadMoreBtn.classList.add('is-hidden');
 }
 
 function imageClickHandler(e) {
   const imgClicked = e.target;
   const sourceForLightbox = imgClicked.dataset.source;
   lightbox.showLargeImage(sourceForLightbox);
+}
+
+// Intersection Observer
+const options = {
+  rootMargin: '80px 0px',
+  threshold: 0.01,
+};
+
+const onEntry = (entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      apiService.incrementPage();
+      createGallery();
+
+      observer.disconnect();
+    }
+  });
+};
+
+const observer = new IntersectionObserver(onEntry, options);
+
+function connectIObserver() {
+  observer.observe(refs.ioTrigger);
+}
+
+function disconnectIObserver() {
+  observer.disconnect();
 }

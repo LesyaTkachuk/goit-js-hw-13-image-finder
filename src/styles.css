@@ -89,16 +89,16 @@ ol {
   margin: 0 auto;
 }
 
+.is-hidden {
+  display: none;
+}
 /* SPINNER */
 .spinner-container {
-  position: fixed;
+  position: absolute;
   width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: rgba(0, 0, 0, 0.3);
 }
 .sk-circle {
@@ -249,8 +249,4 @@ ol {
     -webkit-transform: scale(1);
     transform: scale(1);
   }
-}
-
-.is-hidden {
-  display: none;
 }
