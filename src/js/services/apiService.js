@@ -7,7 +7,7 @@ export default {
   page: 1,
   query: '',
   fetchImages() {
-    const queryParams = `?image_type=photo&orientation=horizontal&q=${this.query}&page=${this.page}&per_page=15&key=${myKey}`;
+    const queryParams = `?image_type=photo&orientation=horizontal&q=${this.query}&page=${this.page}&per_page=12&key=${myKey}`;
     return fetch(url + queryParams)
       .then(response => response.json())
       .then(data => {
